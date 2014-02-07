@@ -1,6 +1,88 @@
-*.class
 
-# Package Files #
+###################
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+##################
+# HAPI           #
+##################
+id_file
+
+##################
+# IntelliJ Data  #
+##################
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/compiler.xml
+.idea/artifacts
+.idea/libraries
+.idea/dictionaries
+.idea/modules.xml
+.idea/misc.xml
+.idea/ant.xml
+.idea/gradle.xml
+.idea/vcs.xml
+.idea/encodings.xml
+.idea/Project_Default.xml
+.idea/profiles_settings.xml
+.idea/uiDesigner.xml
+.idea/inspectionProfiles/*
+atlassian-ide-plugin.xml
+*.iml
+
+######################
+# Project/Maven Data #
+######################
+.metadata*
+target
+build
+.externalToolBuilders*
+.settings
+.classpath
+.project
+.gradle
+
+##################
+# Test csv files #
+##################
+*.BACKUP
+*local*.csv
+*local*.zip
+
+############
+# Packages #
+############
+# it's better to unpack these files and commit the raw source
+# git has its own built in compression methods
+*.7z
+*.dmg
+*.gz
+*.iso
 *.jar
-*.war
-*.ear
+*.rar
+*.tar
+*.zip
+
+######################
+# Logs and databases #
+######################
+logs
+*.log
+*.sqlite
+KahaDB/
+activemq-data/
+
+######################
+# OS generated files #
+######################
+.DS_Store*
+ehthumbs.db
+Icon?
+Thumbs.db
+*~
