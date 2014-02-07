@@ -1,7 +1,9 @@
 jTribesPSO
 ==========
 
-Java Implementation of the Tribes Particle Swarm Optimization method
+Java Implementation of the Tribes Particle Swarm Optimization method.  For more information about the underlying algorithm, see 'TRIBES, a Parameter Free Particle Swarm Optimizer' by Maurice Clerc
+
+Get more information about Tribes particle swarm optimization at http://www.particleswarm.info/ or http://clerc.maurice.free.fr/pso/
 
 This is basically a port of the C# implementation TribesPSO which carried the MIT license.  The java port is relicensing this under the Apache 2.0 license.
 
