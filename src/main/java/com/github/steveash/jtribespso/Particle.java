@@ -65,10 +65,10 @@ public abstract class Particle implements SolutionHolder {
     }
 
     /**
-     *  Gets a value indicating whether or not this particle is "Excellent"
-     *  A particle is considered "excellent" if its best performance
-     *  at time t (now) is better than its best performance at time t-1 AND its best performance at time t-1 is better
-     *  than its best performance at time t-2
+     * Gets a value indicating whether or not this particle is "Excellent"
+     * A particle is considered "excellent" if its best performance
+     * at time t (now) is better than its best performance at time t-1 AND its best performance at time t-1 is better
+     * than its best performance at time t-2
      * @return
      */
     public boolean isExcellent() {
@@ -77,9 +77,9 @@ public abstract class Particle implements SolutionHolder {
     }
 
     /**
-     *  Gets the external informers of this particle.  Note that if this particle isn't the best in it's tribe
-     *  it won't have any external informers.
-     *  Note that the collection of ExternalInformers does not contain a self reference.
+     * Gets the external informers of this particle.  Note that if this particle isn't the best in it's tribe
+     * it won't have any external informers.
+     * Note that the collection of ExternalInformers does not contain a self reference.
      * @return
      */
     public ImmutableList<Particle> externalInformers() {
@@ -97,8 +97,8 @@ public abstract class Particle implements SolutionHolder {
     }
 
     /**
-     *  Gets or sets the tribe of the particle.  Note that this property can only be set once.  Subsequent attemps to set the parent
-     *  tribe results in an InvalidOperationException
+     * Gets or sets the tribe of the particle.  Note that this property can only be set once.  Subsequent attemps to set the parent
+     * tribe results in an InvalidOperationException
      * @param value
      */
     public void setParent(Tribe value) {
@@ -119,9 +119,9 @@ public abstract class Particle implements SolutionHolder {
     }
 
     /**
-     *  Gets the internal informers of this particle.  Note that if the particle doesn't belong to a tribe,
-     *  it will only have itself as an informer
-     *  Note that the collection of InternalInformers always contains a self-reference
+     * Gets the internal informers of this particle.  Note that if the particle doesn't belong to a tribe,
+     * it will only have itself as an informer
+     * Note that the collection of InternalInformers always contains a self-reference
      * @return
      */
     public List<Particle> internalInformers() {
@@ -133,8 +133,8 @@ public abstract class Particle implements SolutionHolder {
     }
 
     /**
-     *  Creates a new Particle with the specified objective function and location.
-     *  The default HyperspaceRandom random number generator will be used to move the particle
+     * Creates a new Particle with the specified objective function and location.
+     * The default HyperspaceRandom random number generator will be used to move the particle
      * @param objectiveFunction
      * @param initialPosition
      */
@@ -182,8 +182,8 @@ public abstract class Particle implements SolutionHolder {
     protected abstract EuclidianVector calculateNewPosition(Solution bestInformerSolution);
 
     /**
-     *  Attempts to move the particle.  The particle's new position is calculated based on it's best history and the history of it's best informer.
-     *  If the particle has no informers that are better, it's not going to move
+     * Attempts to move the particle.  The particle's new position is calculated based on it's best history and the history of it's best informer.
+     * If the particle has no informers that are better, it's not going to move
      */
     public void move() {
         /* The original paper doesn't cover some details like "what happens when a particle has no better external imformers.
@@ -207,6 +207,7 @@ public abstract class Particle implements SolutionHolder {
         //Capture the best informer's best solution so it doesn't change out from under us in a multithreaded environment
         Solution bestInformerSolution = bestInformer.bestSolution();
         EuclidianVector newPosition = calculateNewPosition(bestInformerSolution);
+        newPosition = correctBounds(newPosition);
 
         //Now that we've got our new location, check if it's better and do the necessary book keeping if it is
         double newError = this.goodnessFunction.evaluate(newPosition);
@@ -223,6 +224,35 @@ public abstract class Particle implements SolutionHolder {
         currentError = newError;
 
         bus.post(new ParticleMovedEvent(oldPosition, newPosition));
+    }
+
+    private EuclidianVector correctBounds(EuclidianVector maybeCorrect) {
+        if (!isOutOfBounds(maybeCorrect)) {
+            return maybeCorrect;
+        }
+        EuclidianVector maxs = goodnessFunction.getMaxBounds();
+        EuclidianVector mins = goodnessFunction.getMinBounds();
+
+        EuclidianVectorBuilder builder = new EuclidianVectorBuilder();
+        for (int i = 0; i < goodnessFunction.getDimensions(); i++) {
+            double v = maybeCorrect.get(i);
+            v = Math.min(v, maxs.get(i));
+            v = Math.max(v, mins.get(i));
+            builder.add(v);
+        }
+        return builder.build();
+    }
+
+    private boolean isOutOfBounds(EuclidianVector maybe) {
+        EuclidianVector maxs = goodnessFunction.getMaxBounds();
+        EuclidianVector mins = goodnessFunction.getMinBounds();
+
+        for (int i = 0; i < goodnessFunction.getDimensions(); i++) {
+            double v = maybe.get(i);
+            if (v < mins.get(i)) return true;
+            if (v > maxs.get(i)) return true;
+        }
+        return false;
     }
 
     public EventBus eventBus() {
